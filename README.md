@@ -147,3 +147,9 @@ And the central section (containing the top, centered, and bottom labels) are la
 layout vertical surround center noWrap
 ```
 Which ensures that the labels are equally spaced along the vertical axis `surround` and are centered along the horizontal axis `center`
+
+To re-cap, `layout` takes arguments of the following kind
+```elm
+layout : Direction -> Alignment -> Alignment -> Wrap -> List Html -> Html
+layout direction mainAxisAlignment crossAxisAlignment wrap children
+```
