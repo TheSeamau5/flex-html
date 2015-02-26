@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "summary": "Flexbox layout for elm-html",
+    "repository": "https://github.com/USER/PROJECT.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+      "Flex"
+    ],
+    "dependencies": {
+        "elm-lang/core": "1.1.1 <= v < 2.0.0",
+        "evancz/elm-html": "2.0.0 <= v < 3.0.0"
+    }
+}
