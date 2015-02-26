@@ -31,7 +31,8 @@ holyGrail =
       mainSection = row
         [ leftSection
         , flexN 4 centerSection
-        , rightSection]
+        , rightSection
+        ]
 
   in
       column
