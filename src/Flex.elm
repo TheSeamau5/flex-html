@@ -5,6 +5,8 @@ module Flex
   , rowReverse
   , flex
   , flexN
+  , flexDiv
+  , flexNode
   , fullbleed
   , layout
   , horizontal
@@ -43,10 +45,48 @@ module Flex
 # Flex Wrapping
 @docs wrap, noWrap, wrapReverse
 
+# Creating flexbox-ready nodes
+@docs flexNode, flexDiv
+
 -}
 
-import Html (Html, div)
+import Html (Html, div, Attribute, node)
 import Html.Attributes (style)
+
+{-| Analog of `node`. Creates a node (of given name), with a list of styles,
+a list of attributes, and a list of children
+
+    flexNode name styles attributes children
+
+Note: The styles have been separated from the attributes in order for the flex attribute
+to persist (in case the styles were overwritten). As a result, DO NOT include styles in
+your attributes if you wish to use `flexNode`. Pass the styles to the function directly.
+This'll guarantee that things will go swimmingly :)
+-}
+flexNode : String -> List (String, String) -> List Attribute -> List Html -> Html
+flexNode name styles attributes children =
+  let
+      flexAttribute = style
+        ([ ("flex", "1 1 auto")] ++ styles)
+
+  in
+      node name (flexAttribute :: attributes) children
+
+
+{-| Analog of `div`. Creates a div with a list of styles, a list of attributes,
+and a list of children
+
+    flexDiv styles attributes children
+
+Note: The styles have been separated from the attributes in order for the flex attribute
+to persist (in case the styles were overwritten). As a result, DO NOT include styles in
+your attributes if you wish to use `flexDiv`. Pass the styles to the function directly.
+This'll guarantee that things will go swimmingly :)
+-}
+flexDiv : List (String, String) -> List Attribute -> List Html -> Html
+flexDiv =
+  flexNode "div"
+
 
 container : String -> List Html -> Html
 container direction =
@@ -112,13 +152,13 @@ a node rather than affect it directly.
 flexN : Int -> Html -> Html
 flexN factor element =
   let
-      elementStyle = style
+      elementStyles = style
         [ ("flex", (toString factor) ++ " 1 auto")
         , ("display", "flex")
         ]
 
   in
-      div [elementStyle] [element]
+      div [elementStyles] [element]
 
 {-| Wraps an element in a flex container that takes the size of the entire
 screen. Use this only at the top level for the full view. This is not intended
@@ -181,17 +221,18 @@ layout direction justify align wrap =
         NoWrap -> "nowrap"
         WrapReverse -> "wrap-reverse"
 
-      containerStyle = style
+      containerStyles = style
         [ ("display", "flex")
         , ("flex-direction", directionString)
         , ("justify-content", justifyString)
         , ("align-items", alignString)
         , ("width", "100%")
         , ("height", "100%")
+        , ("flex", "1 1 auto")
         ]
 
   in
-      div [containerStyle]
+      div [containerStyles]
 
 
 
