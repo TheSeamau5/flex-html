@@ -1,4 +1,4 @@
-import Html (..)
+import Html (Html, div, text)
 import Html.Attributes (style)
 import Flex (..)
 
