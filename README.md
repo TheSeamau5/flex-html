@@ -124,8 +124,26 @@ We then layout the left label, the three central labels and the right label hori
 ```elm
 layout horizontal surround stretch noWrap
 ```
-
+where:
 * `horizontal` implies that the children will be laid out from left to right horizontally
 * `surround` implies that the children will be equally spaced along the main axis (in this case, the horizontal axis)
 * `stretch` implies that the children will take up as much space as possible along the cross axis (in this case, the vertical axis)
 * `noWrap` implies that the children will not wrap if there isn't enough space to flex (not a concern in this example)
+
+
+The right and left sections are centered using :
+
+```elm
+layout vertical center center noWrap
+```
+where:
+* `vertical` implies that the children will be laid out from top to bottom
+* `center` (on both arguments) implies that the element will be absolutely centered
+
+
+And the central section (containing the top, centered, and bottom labels) are laid out using:
+
+```elm
+layout vertical surround center noWrap
+```
+Which ensures that the labels are equally spaced along the vertical axis `surround` and are centered along the horizontal axis `center`
