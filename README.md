@@ -1,5 +1,5 @@
 # flex-html
-This library contains several facilities for laying out Html with elm-html using flexbox.
+This library contains several affordances for laying out Html with elm-html using flexbox.
 
 To illustrate how it works, here is an example of how to do the holy grail layout using flex-html
 
