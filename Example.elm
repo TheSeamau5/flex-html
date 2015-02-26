@@ -18,25 +18,30 @@ background color =
       flexDiv backgroundStyles [] []
 
 
-redBackground = background "red"
-blueBackground = background "blue"
-greenBackground = background "green"
-blackBackground = background "black"
-yellowBackground = background "yellow"
-
-
+holyGrail : Html
 holyGrail =
-  column
-    [ redBackground
-    , flexN 8 (row
-      [ blueBackground
-      , flexN 4 greenBackground
-      , yellowBackground
-      ])
-    , blackBackground
-    ]
+  let
+      topSection = background "red"
+      bottomSection = background "black"
+
+      leftSection = background "blue"
+      rightSection = background "yellow"
+      centerSection = background "green"
+
+      mainSection = row
+        [ leftSection
+        , flexN 4 centerSection
+        , rightSection]
+
+  in
+      column
+        [ topSection
+        , flexN 8 mainSection
+        , bottomSection
+        ]
 
 
+main : Html
 main = fullbleed holyGrail
 
 
@@ -44,8 +49,11 @@ main = fullbleed holyGrail
 -- POSITIONING EXAMPLE
 ----------------------
 
-label value = div [style [("background-color", "red")]] [text value]
+label : String -> Html
+label value =
+  div [style [("background-color", "red")]] [text value]
 
+labels : Html
 labels =
   layout horizontal surround stretch noWrap
     [ layout vertical center center noWrap [label "I am on the left"]
@@ -58,5 +66,5 @@ labels =
     ]
 
 
-
+--main : Html
 --main = fullbleed labels
