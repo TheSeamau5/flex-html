@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Flexbox layout for elm-html",
     "repository": "https://github.com/TheSeamau5/flex-html.git",
     "license": "BSD3",
@@ -7,7 +7,7 @@
         "src"
     ],
     "exposed-modules": [
-      "Flex"
+        "Flex"
     ],
     "dependencies": {
         "elm-lang/core": "1.1.1 <= v < 2.0.0",
