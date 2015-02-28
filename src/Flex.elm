@@ -67,7 +67,8 @@ flexNode : String -> List (String, String) -> List Attribute -> List Html -> Htm
 flexNode name styles attributes children =
   let
       flexAttribute = style
-        ([ ("flex", "1 1 auto")] ++ styles)
+        ([ ("flex", "1 1 auto")
+         , ("display", "flex")] ++ styles)
 
   in
       node name (flexAttribute :: attributes) children
