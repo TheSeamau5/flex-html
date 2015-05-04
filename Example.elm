@@ -1,6 +1,6 @@
-import Html (Html, div, text)
-import Html.Attributes (style)
-import Flex (..)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (style)
+import Flex exposing (..)
 
 
 ----------------------------
