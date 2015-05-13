@@ -50,8 +50,8 @@ module Flex
 
 -}
 
-import Html (Html, div, Attribute, node)
-import Html.Attributes (style)
+import Html exposing (Html, div, Attribute, node)
+import Html.Attributes exposing (style)
 
 {-| Analog of `node`. Creates a node (of given name), with a list of styles,
 a list of attributes, and a list of children
