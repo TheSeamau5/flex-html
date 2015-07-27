@@ -67,8 +67,10 @@ flexNode : String -> List (String, String) -> List Attribute -> List Html -> Htm
 flexNode name styles attributes children =
   let
       flexAttribute = style
-        ([ ("flex", "1 1 auto")
-         , ("display", "flex")] ++ styles)
+        ( mixinDisplay
+          ++ (mixinFlex "1" "1" "auto")
+          ++ styles
+        )
 
   in
       node name (flexAttribute :: attributes) children
@@ -89,14 +91,14 @@ flexDiv =
   flexNode "div"
 
 
-container : String -> List Html -> Html
+container : Direction -> List Html -> Html
 container direction =
   let
       containerStyle = style
-        [ ("display", "flex")
-        , ("flex-direction", direction)
-        , ("flex", "1 1 auto")
-        ]
+        ( mixinDisplay
+          ++ (mixinDirection direction)
+          ++ (mixinFlex "1" "1" "auto")
+        )
 
   in
       div [containerStyle]
@@ -105,25 +107,25 @@ container direction =
 -}
 column : List Html -> Html
 column =
-  container "column"
+  container Vertical
 
 {-| Align children vertically from bottom to top
 -}
 columnReverse : List Html -> Html
 columnReverse =
-  container "column-reverse"
+  container VerticalReverse
 
 {-| Align children horizontally from left to right
 -}
 row : List Html -> Html
 row =
-  container "row"
+  container Horizontal
 
 {-| Align children horizontally from right to left
 -}
 rowReverse : List Html -> Html
 rowReverse =
-  container "row-reverse"
+  container HorizontalReverse
 
 {-| Surround an Html element by a flex container.
 
@@ -154,9 +156,9 @@ flexN : Int -> Html -> Html
 flexN factor element =
   let
       elementStyles = style
-        [ ("flex", (toString factor) ++ " 1 auto")
-        , ("display", "flex")
-        ]
+        ( mixinDisplay
+          ++ (mixinFlex (toString factor) "1" "auto")
+        )
 
   in
       div [elementStyles] [element]
@@ -169,10 +171,10 @@ fullbleed : Html -> Html
 fullbleed element =
   let
       elementStyle = style
-        [ ("width", "100vw")
-        , ("height", "100vh")
-        , ("display", "flex")
-        ]
+        ( ("width", "100vw") ::
+          ("height", "100vh") ::
+          mixinDisplay
+        )
   in
       div [elementStyle] [element]
 
@@ -196,42 +198,14 @@ The choices are `wrap`, `noWrap`, `wrapReverse`
 -}
 layout : Direction -> Alignment -> Alignment -> Wrap -> List Html -> Html
 layout direction justify align wrap =
-  let
-      directionString = case direction of
-        Horizontal -> "row"
-        Vertical -> "column"
-        HorizontalReverse -> "row-reverse"
-        VerticalReverse -> "column-reverse"
-
-      alignString = case align of
-        Start -> "flex-start"
-        Center -> "center"
-        End -> "flex-end"
-        Stretch -> "strech"
-        Surround -> "baseline"
-
-      justifyString = case justify of
-        Start -> "flex-start"
-        Center -> "center"
-        End -> "flex-end"
-        Stretch -> "space-between"
-        Surround -> "space-around"
-
-      wrapString = case wrap of
-        Wrap -> "wrap"
-        NoWrap -> "nowrap"
-        WrapReverse -> "wrap-reverse"
-
-      containerStyles = style
-        [ ("display", "flex")
-        , ("flex-direction", directionString)
-        , ("justify-content", justifyString)
-        , ("align-items", alignString)
-        , ("width", "100%")
-        , ("height", "100%")
-        , ("flex", "1 1 auto")
-        ]
-
+  let containerStyles = style
+        ( mixinDisplay
+          ++ (mixinDirection direction)
+          ++ (mixinJustifyContent justify)
+          ++ (mixinAlign align)
+          ++ (mixinFlex "1" "1" "auto")
+          ++ [ ("width", "100%"), ("height", "100%") ]
+        )
   in
       div [containerStyles]
 
@@ -291,3 +265,124 @@ noWrap = NoWrap
 
 wrapReverse : Wrap
 wrapReverse = WrapReverse
+
+
+{-| Flex Mixins to support older and vendor-specific syntax as well.
+-}
+
+mixinDisplay : List (String, String)
+mixinDisplay  =
+  [ ("display", "-webkit-box")
+  , ("display", "-webkit-flex")
+  , ("display", "-moz-flex")
+  , ("display", "-ms-flexbox")
+  , ("display", "flex")
+  ]
+
+mixinDirection : Direction -> List (String, String)
+mixinDirection direction =
+  let (boxDirection, boxOrientation, value) =
+        case direction of
+          Horizontal ->
+            ("normal", "horizontal", "row")
+
+          Vertical ->
+            ("normal", "vertical", "column")
+
+          HorizontalReverse ->
+            ("reverse", "horizontal", "row-reverse")
+
+          VerticalReverse ->
+            ("reverse", "vertical", "column-reverse")
+  in
+    [ ("-webkit-box-direction", boxDirection)
+    , ("-webkit-box-orient", boxOrientation)
+    , ("-webkit-flex-direction", value)
+    , ("-moz-flex-direction", value)
+    , ("-ms-flex-direction", value)
+    , ("flex-direction", value)
+    ]
+
+mixinWrap : Wrap -> List (String, String)
+mixinWrap wrap =
+  let (vendorValue, value) =
+     case wrap of
+        Wrap ->
+          ("wrap", "wrap")
+
+        NoWrap ->
+          ("none", "nowrap")
+
+        WrapReverse ->
+          ("wrap-reverse", "wrap-reverse")
+  in
+    [ ("-webkit-flex-wrap", value)
+    , ("-moz-flex-wrap", value)
+    , ("-ms-flex-wrap", vendorValue)
+    , ("flex-wrap", value)
+    ]
+
+mixinAlign : Alignment -> List (String, String)
+mixinAlign alignment =
+  let (vendorValue, value) =
+        case alignment of
+          Start ->
+            ("start", "flex-start")
+
+          Center ->
+            ("center", "center")
+
+          End ->
+            ("end", "flex-end")
+
+          Stretch ->
+            ("stretch", "stretch")
+
+          Surround ->
+            ("baseline", "baseline")
+  in
+    [ ("-webkit-box-align", vendorValue)
+    , ("-ms-flex-align", vendorValue)
+    , ("-webkit-align-items", value)
+    , ("-moz-align-items", value)
+    , ("align-items", value)
+    ]
+
+mixinJustifyContent : Alignment -> List (String, String)
+mixinJustifyContent alignment =
+  let (webkitValue, msValue, value) =
+        case alignment of
+          Start ->
+            ("start", "start", "flex-start")
+
+          Center ->
+            ("center", "center", "center")
+
+          End ->
+            ("end", "end", "flex-end")
+
+          Stretch ->
+            ("justify", "justify", "space-between")
+
+          Surround ->
+            ("none", "distribute", "space-around")
+  in
+    [ ("-webkit-box-pack", webkitValue)
+    , ("-ms-flex-pack", msValue)
+    , ("-webkit-justify-content", value)
+    , ("-moz-justify-content", value)
+    , ("justify-content", value)
+    ]
+
+mixinFlex : String -> String -> String -> List (String, String)
+mixinFlex grow shrink basis =
+  let value =
+        grow ++ " " ++ shrink ++ " " ++ basis
+  in
+    [ ("-webkit-box-flex", grow)
+    , ("-webkit-flex", value)
+    , ("-moz-box-flex", grow)
+    , ("-moz-flex", value)
+    , ("-ms-flex", value)
+    , ("flex", value)
+    ]
