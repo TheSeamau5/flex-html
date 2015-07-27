@@ -203,6 +203,7 @@ layout direction justify align wrap =
           ++ (mixinDirection direction)
           ++ (mixinJustifyContent justify)
           ++ (mixinAlign align)
+          ++ (mixinWrap wrap)
           ++ (mixinFlex "1" "1" "auto")
           ++ [ ("width", "100%"), ("height", "100%") ]
         )
