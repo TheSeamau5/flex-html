@@ -1,7 +1,7 @@
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (style)
 
-import Flex exposing (..)
+import Flex
 
 ----------------------
 -- POSITIONING EXAMPLE
@@ -9,21 +9,39 @@ import Flex exposing (..)
 
 label : String -> Html
 label value =
-  div [style [("background-color", "red")]] [text value]
-
-labels : Html
-labels =
-  layout horizontal surround stretch noWrap
-    [ layout vertical center center noWrap [label "I am on the left"]
-    , layout vertical surround center noWrap
-      [ label "I am on top"
-      , label "I am absolutely centered"
-      , label "I am down below"
+  div
+    [ [ ("background-color", "red")
+      , ("color", "white")
+      , ("padding", "5px")
+      , ("font-weight", "bold")
       ]
-    , layout vertical center center noWrap [label "I am on the right"]
+      |> style
     ]
+    [ text value ]
 
 
 main : Html
 main =
-  fullbleed labels
+  div
+    [ ( Flex.justifyContent Flex.Surround
+        ++ Flex.alignItems Flex.Center
+        ++ Flex.flexWrap Flex.NoWrap
+        ++ Flex.display
+        ++ [ ("width", "100vw"), ("height", "100vh") ]
+      ) |> style
+    ]
+    [ label "I am on the left"
+    , div
+        [ Flex.flexFlow Flex.Vertical Flex.NoWrap
+          ++ Flex.justifyContent Flex.Surround
+          ++ Flex.alignItems Flex.Center
+          ++ Flex.display
+          ++ [ ("height", "100%") ]
+          |> style
+        ]
+        [ label "I am on top"
+        , label "I am absolutely centered"
+        , label "I am down below"
+        ]
+    , label "I am on the right"
+    ]
