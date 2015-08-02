@@ -6,29 +6,30 @@ To illustrate how it works, here is an example of how to do the holy grail layou
 ### Holy Grail Layout
 
 ```elm
-background : String -> String -> Html
+background : Float -> String -> Html
 background grow color =
-  let backgroundStyles =
-        Flex.grow grow
-        |> (::) ("background-color", color)
-        |> style
-
+  let
+      backgroundStyles =
+        ("background-color", color)
+        :: Flex.grow grow
   in
-      div [backgroundStyles] []
+      div
+        [ style backgroundStyles ]
+        []
 
 
 holyGrail : Html
 holyGrail =
-  let topSection = background "1" "red"
-      bottomSection = background "1" "black"
-
-      leftSection = background "1" "blue"
-      rightSection = background "1" "yellow"
-      centerSection = background "4" "green"
+  let
+      topSection    = background 1 "red"
+      bottomSection = background 1 "black"
+      leftSection   = background 1 "blue"
+      rightSection  = background 1 "yellow"
+      centerSection = background 4 "green"
 
       styleList =
-        (Flex.direction Flex.Horizontal)
-        ++ (Flex.grow "8")
+        Flex.direction Flex.Horizontal
+        ++ Flex.grow 8
         ++ Flex.display
 
       mainSection =
@@ -44,7 +45,7 @@ holyGrail =
         , ("height", "100vh")
         ]
         ++ Flex.display
-        ++ (Flex.direction Flex.Vertical)
+        ++ Flex.direction Flex.Vertical
 
   in
       div
@@ -67,14 +68,14 @@ The holy grail layout has 5 sections: a top row section, a bottom row section, a
 Each section is created as a background with a unique color to distinguish them:
 
 ```elm
-topSection = background "1" "red"
-bottomSection = background "1" "black"
-leftSection = background "1" "blue"
-rightSection = background "1" "yellow"
-centerSection = background "4" "green"
+topSection    = background 1 "red"
+bottomSection = background 1 "black"
+leftSection   = background 1 "blue"
+rightSection  = background 1 "yellow"
+centerSection = background 4 "green"
 ```
 
-An then we simply lay them out. We first consider the vertically flowing sections. So we lay the top section atop a main section atop a bottom section as follows: 
+An then we simply lay them out. We first consider the vertically flowing sections. So we lay the top section atop a main section atop a bottom section as follows:
 
 ```elm
 mainStyleList =
@@ -82,7 +83,7 @@ mainStyleList =
   , ("height", "100vh")
   ]
   ++ Flex.display
-  ++ (Flex.direction Flex.Vertical)
+  ++ Flex.direction Flex.Vertical
 
 {-| ... -}
 
@@ -98,8 +99,8 @@ Where the main section is a horizontal layout of the left section, the center se
 
 ```elm
 styleList =
-  (Flex.direction Flex.Horizontal)
-  ++ (Flex.grow "8")
+  Flex.direction Flex.Horizontal
+  ++ Flex.grow 8
   ++ Flex.display
 
 mainSection =
@@ -122,80 +123,79 @@ To illustrate how you can use these mixins, here is an example of positioning la
 ```elm
 label : String -> Html
 label value =
-  div
-    [ [ ("background-color", "red")
-      , ("color", "white")
-      , ("padding", "5px")
-      , ("font-weight", "bold")
-      ]
-      |> style
-    ]
-    [ text value ]
+  let
+      labelStyle =
+        [ ("background-color", "red")
+        , ("color", "white")
+        , ("padding", "5px")
+        , ("font-weight", "bold")
+        ]
+  in
+      div
+        [ style labelStyle ]
+        [ text value ]
 
 
 main : Html
 main =
-  div
-    [ ( Flex.justifyContent Flex.Surround
+  let
+      containerStyle =
+        ("width", "100vw")
+        :: ("height", "100vh")
+        :: Flex.justifyContent Flex.Surround
         ++ Flex.alignItems Flex.Center
         ++ Flex.wrap Flex.NoWrap
         ++ Flex.display
-        ++ [ ("width", "100vw"), ("height", "100vh") ]
-      ) |> style
-    ]
-    [ label "I am on the left"
-    , div
-        [ Flex.flow Flex.Vertical Flex.NoWrap
-          ++ Flex.justifyContent Flex.Surround
-          ++ Flex.alignItems Flex.Center
-          ++ Flex.display
-          ++ [ ("height", "100%") ]
-          |> style
+
+      innerContainerStyle =
+        ("height", "100%")
+        :: Flex.flow Flex.Vertical Flex.NoWrap
+        ++ Flex.justifyContent Flex.Surround
+        ++ Flex.alignItems Flex.Center
+        ++ Flex.display
+  in
+      div
+        [ style containerStyle ]
+        [ label "I am on the left"
+        , div
+            [ style innerContainerStyle ]
+            [ label "I am on top"
+            , label "I am absolutely centered"
+            , label "I am down below"
+            ]
+        , label "I am on the right"
         ]
-        [ label "I am on top"
-        , label "I am absolutely centered"
-        , label "I am down below"
-        ]
-    , label "I am on the right"
-    ]
 ```
 
-So, as you may see, we have a helper function called `label` to create our labels. 
+So, as you may see, we have a helper function called `label` to create our labels.
 
 We then layout the left label, the three central labels and the right label horizontally with:
 
 ```elm
-div
-    [ ( Flex.justifyContent Flex.Surround
-        ++ Flex.alignItems Flex.Center
-        ++ Flex.wrap Flex.NoWrap
-        ++ Flex.display
-        ++ [ ("width", "100vw"), ("height", "100vh") ]
-      ) |> style
-    ]
+containerStyle =
+  ("width", "100vw")
+  :: ("height", "100vh")
+  :: Flex.justifyContent Flex.Surround
+  ++ Flex.alignItems Flex.Center
+  ++ Flex.wrap Flex.NoWrap
+  ++ Flex.display
 ```
 where:
 * `justifyContent Surround` implies that the children will be equally spaced along the main axis (in this case, the horizontal axis)
 * `wrap NoWrap` implies that the children will not wrap if there isn't enough space to flex (not a concern in this example)
-* `alignItems Center` makes sur eto center the items
+* `alignItems Center` makes sure to center the items
 * `display` applies flex display on the div
 * `horizontal` is the default direction and thus main axis
 
 And the central section (containing the top, centered, and bottom labels) are laid out using:
 
 ```elm
-div
-  [ Flex.flow Flex.Vertical Flex.NoWrap
-    ++ Flex.justifyContent Flex.Surround
-    ++ Flex.alignItems Flex.Center
-    ++ Flex.display
-    ++ [ ("height", "100%") ]
-    |> style
-  ]
-  [ label "I am on top"
-  , label "I am absolutely centered"
-  , label "I am down below"
-  ]
+innerContainerStyle =
+  ("height", "100%")
+  :: Flex.flow Flex.Vertical Flex.NoWrap
+  ++ Flex.justifyContent Flex.Surround
+  ++ Flex.alignItems Flex.Center
+  ++ Flex.display
 ```
 where:
 * `flow Vertical NoWrap` sets Vertical as the direction, making that the main axis and disable wrapping as seen previously
