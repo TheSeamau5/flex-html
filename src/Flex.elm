@@ -187,24 +187,32 @@ justifyContent alignment =
 {-| The `grow` mixin specifies how much the item will grow relative to the rest
 of the flexible items inside the same container.
 -}
-grow : String -> List (String, String)
+grow : Float -> List (String, String)
 grow growValue =
-  [ ("-webkit-box-flex", growValue)
-  , ("-webkit-flex-grow", growValue)
-  , ("-ms-flex-positive", growValue)
-  , ("flex-grow", growValue)
-  ]
+  let
+      string =
+        toString growValue
+  in
+      [ ("-webkit-box-flex", string)
+      , ("-webkit-flex-grow", string)
+      , ("-ms-flex-positive", string)
+      , ("flex-grow", string)
+      ]
 
 
 {-| The `shrink` mixin specifies how the item will shrink relative to the rest
 of the flexible items inside the same container.
 -}
-shrink : String -> List (String, String)
+shrink : Float -> List (String, String)
 shrink shrinkValue =
-  [ ("-webkit-flex-shrink", shrinkValue)
-  , ("-ms-flex-negative", shrinkValue)
-  , ("flex-shrink", shrinkValue)
-  ]
+  let
+      string =
+        toString shrinkValue
+  in
+      [ ("-webkit-flex-shrink", string)
+      , ("-ms-flex-negative", string)
+      , ("flex-shrink", string)
+      ]
 
 
 {-| The `basis` mixin specifies the initial length of a flexible item.
@@ -222,12 +230,19 @@ the flexible items inside the same container.
 
 It's a style shorthand for flexGrow, flexShrink and flexBasis
 -}
-flex : String -> String -> String -> List (String, String)
+flex : Float -> Float -> String -> List (String, String)
 flex grow shrink basis =
-  let value =
-        grow  ++ " " ++ shrink ++ " " ++ basis
+  let
+      growString =
+        toString grow
+
+      shrinkString =
+        toString shrink
+
+      value =
+        growString  ++ " " ++ shrinkString ++ " " ++ basis
   in
-      [ ("-webkit-box-flex", grow)
+      [ ("-webkit-box-flex", growString)
       , ("-webkit-flex", value)
       , ("-ms-flex", value)
       , ("flex", value)
