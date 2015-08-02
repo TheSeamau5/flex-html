@@ -7,7 +7,7 @@ module Flex where
 
 # Flex Mixins
 Mixins can be used alone or as a combinator to specify flex-related styles.
-@docs display, flexFlow, flexDirection, flexWrap, alignItems, justifyContent, flexGrow, flexShrink, flexBasis, flex, order, alignSelf
+@docs display, flow, direction, wrap, alignItems, justifyContent, grow, shrink, basis, flex, order, alignSelf
 
 -}
 
@@ -44,7 +44,7 @@ type Alignment
   | Surround
 
 
-{-| The `WrapValue` type specifies all the wrapping values possible for the `flexWrap` mixin.
+{-| The `WrapValue` type specifies all the wrapping values possible for the `wrap` mixin.
     
     Wrap: Specifies that the flexible items will wrap if necessary.
     NoWrap: Default value. Specifies that the flexible items will not wrap.
@@ -67,21 +67,20 @@ display =
     [ ("display", displayValue) ]
 
 
-{-| The flex-grow property specifies how much the item will grow relative to the rest of the flexible items inside the same container.
-    Note: If the element is not a flexible item, the flex-grow property has no effect.
+{-| The `flow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
 -}
-flexFlow: Direction -> WrapValue -> List (String, String)
-flexFlow direction wrap =
-  flexDirection direction
-  ++ flexWrap wrap
+flow: Direction -> WrapValue -> List (String, String)
+flow directionValue wrapValue =
+  direction directionValue
+  ++ wrap wrapValue
 
 
-{-| The `flexDirection` mixin specifies the direction of the flexible items.
+{-| The `direction` mixin specifies the direction of the flexible items.
   -}
-flexDirection : Direction -> List (String, String)
-flexDirection direction =
+direction : Direction -> List (String, String)
+direction directionValue =
   let (boxDirection, boxOrientation, value) =
-        case direction of
+        case directionValue of
           Horizontal ->
             ("normal", "horizontal", "row")
 
@@ -102,12 +101,12 @@ flexDirection direction =
     ]
 
 
-{-| The `flexWrap` mixin specifies whether the flexible items should wrap or not.
+{-| The `wrap` mixin specifies whether the flexible items should wrap or not.
   -}
-flexWrap : WrapValue -> List (String, String)
-flexWrap wrap =
+wrap : WrapValue -> List (String, String)
+wrap wrapValue =
   let (vendorValue, value) =
-     case wrap of
+     case wrapValue of
         Wrap ->
           ("wrap", "wrap")
 
@@ -179,34 +178,34 @@ justifyContent alignment =
     ]
 
 
-{-| The `flexGrow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+{-| The `grow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
 -}
-flexGrow : String -> List (String, String)
-flexGrow grow =
-  [ ("-webkit-box-flex", grow)
-  , ("-webkit-flex-grow", grow)
-  , ("-ms-flex-positive", grow)
-  , ("flex-grow", grow)
+grow : String -> List (String, String)
+grow growValue =
+  [ ("-webkit-box-flex", growValue)
+  , ("-webkit-flex-grow", growValue)
+  , ("-ms-flex-positive", growValue)
+  , ("flex-grow", growValue)
   ]
 
 
-{-| The `flexShrink` mixin specifies how the item will shrink relative to the rest of the flexible items inside the same container.
+{-| The `shrink` mixin specifies how the item will shrink relative to the rest of the flexible items inside the same container.
 -}
-flexShrink : String -> List (String, String)
-flexShrink shrink =
-  [ ("-webkit-flex-shrink", shrink)
-  , ("-ms-flex-negative", shrink)
-  , ("flex-shrink", shrink)
+shrink : String -> List (String, String)
+shrink shrinkValue =
+  [ ("-webkit-flex-shrink", shrinkValue)
+  , ("-ms-flex-negative", shrinkValue)
+  , ("flex-shrink", shrinkValue)
   ]
 
 
-{-| The `flexBasis` mixin specifies the initial length of a flexible item.
+{-| The `basis` mixin specifies the initial length of a flexible item.
 -}
-flexBasis : String -> List (String, String)
-flexBasis basis =
-  [ ("-webkit-flex-basis", basis)
-  , ("-ms-flex-preferred-size", basis)
-  , ("flex-basis", basis)
+basis : String -> List (String, String)
+basis basisValue =
+  [ ("-webkit-flex-basis", basisValue)
+  , ("-ms-flex-preferred-size", basisValue)
+  , ("flex-basis", basisValue)
   ]
 
 

@@ -10,7 +10,7 @@ import Flex
 background : String -> String -> Html
 background grow color =
   let backgroundStyles =
-        Flex.flexGrow grow
+        Flex.grow grow
         |> (::) ("background-color", color)
         |> style
 
@@ -28,8 +28,8 @@ holyGrail =
       centerSection = background "4" "green"
 
       styleList =
-        (Flex.flexDirection Flex.Horizontal)
-        ++ (Flex.flexGrow "8")
+        (Flex.direction Flex.Horizontal)
+        ++ (Flex.grow "8")
         ++ Flex.display
 
       mainSection =
@@ -45,7 +45,7 @@ holyGrail =
         , ("height", "100vh")
         ]
         ++ Flex.display
-        ++ (Flex.flexDirection Flex.Vertical)
+        ++ (Flex.direction Flex.Vertical)
 
   in
       div

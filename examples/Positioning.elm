@@ -25,14 +25,14 @@ main =
   div
     [ ( Flex.justifyContent Flex.Surround
         ++ Flex.alignItems Flex.Center
-        ++ Flex.flexWrap Flex.NoWrap
+        ++ Flex.wrap Flex.NoWrap
         ++ Flex.display
         ++ [ ("width", "100vw"), ("height", "100vh") ]
       ) |> style
     ]
     [ label "I am on the left"
     , div
-        [ Flex.flexFlow Flex.Vertical Flex.NoWrap
+        [ Flex.flow Flex.Vertical Flex.NoWrap
           ++ Flex.justifyContent Flex.Surround
           ++ Flex.alignItems Flex.Center
           ++ Flex.display

@@ -6,43 +6,58 @@ To illustrate how it works, here is an example of how to do the holy grail layou
 ### Holy Grail Layout
 
 ```elm
-background : String -> Html
-background color =
-  let
-      backgroundStyles =
-        [ ("background-color", color)
-        ]
+background : String -> String -> Html
+background grow color =
+  let backgroundStyles =
+        Flex.grow grow
+        |> (::) ("background-color", color)
+        |> style
 
   in
-      flexDiv backgroundStyles [] []
+      div [backgroundStyles] []
 
 
 holyGrail : Html
 holyGrail =
-  let
-      topSection = background "red"
-      bottomSection = background "black"
+  let topSection = background "1" "red"
+      bottomSection = background "1" "black"
 
-      leftSection = background "blue"
-      rightSection = background "yellow"
-      centerSection = background "green"
+      leftSection = background "1" "blue"
+      rightSection = background "1" "yellow"
+      centerSection = background "4" "green"
 
-      mainSection = row
-        [ leftSection
-        , flexN 4 centerSection
-        , rightSection
+      styleList =
+        (Flex.direction Flex.Horizontal)
+        ++ (Flex.grow "8")
+        ++ Flex.display
+
+      mainSection =
+        div
+          [ style styleList ]
+          [ leftSection
+          , centerSection
+          , rightSection
+          ]
+
+      mainStyleList =
+        [ ("width", "100vw")
+        , ("height", "100vh")
         ]
+        ++ Flex.display
+        ++ (Flex.direction Flex.Vertical)
 
   in
-      column
+      div
+        [ style mainStyleList ]
         [ topSection
-        , flexN 8 mainSection
+        , mainSection
         , bottomSection
         ]
 
 
 main : Html
-main = fullbleed holyGrail
+main =
+  holyGrail
 ```
 
 We populate the page with distinctly colored backgrounds (hence, the use of a `background` function).
@@ -52,19 +67,29 @@ The holy grail layout has 5 sections: a top row section, a bottom row section, a
 Each section is created as a background with a unique color to distinguish them:
 
 ```elm
-topSection = background "red"
-bottomSection = background "black"
-leftSection = background "blue"
-rightSection = background "yellow"
-centerSection = background "green"
+topSection = background "1" "red"
+bottomSection = background "1" "black"
+leftSection = background "1" "blue"
+rightSection = background "1" "yellow"
+centerSection = background "4" "green"
 ```
 
 An then we simply lay them out. We first consider the vertically flowing sections. So we lay the top section atop a main section atop a bottom section as follows: 
 
 ```elm
-column
+mainStyleList =
+  [ ("width", "100vw")
+  , ("height", "100vh")
+  ]
+  ++ Flex.display
+  ++ (Flex.direction Flex.Vertical)
+
+{-| ... -}
+
+div
+  [ style mainStyleList ]
   [ topSection
-  , flexN 8 mainSection
+  , mainSection
   , bottomSection
   ]
 ```
@@ -72,49 +97,67 @@ column
 Where the main section is a horizontal layout of the left section, the center section, and the right section (from left to right) and is defined as follows:
 
 ```elm
-mainSection = row
-  [ leftSection
-  , flexN 4 centerSection
-  , rightSection
-  ]
+styleList =
+  (Flex.direction Flex.Horizontal)
+  ++ (Flex.grow "8")
+  ++ Flex.display
+
+mainSection =
+  div
+    [ style styleList ]
+    [ leftSection
+    , centerSection
+    , rightSection
+    ]
 ```
 
-And then, to display the page fullscreen, we simply call `fullbleed` as follows:
-
-```elm
-main = fullbleed holyGrail
-```
-
-Note the use of `flexN` in the code. `flexN` sets the flex size of an Html element. A `flexN` of 8, for example, means that an element will try to occupy a space 8x as large as an element that hasn't a set flex size or has set it to a default of `1`. 
-
-Furthermore, note the use of `flexDiv`. `flexDiv` is an analog of `div` and is by no means necessary to use flexbox. Unfortunately, a common mistake with flexbox is to assume that a child div for which a width and a height is undefined will magically flex to fit the available dimensions of its parent. This is not how flexbox works and is perhaps one of the confusing bits of flexbox as it often leads to well positioned elements but whose width or height is equal to zero. In order to compensate for this confusion, `flexDiv` was introduced and basically does what you think it does (you don't need to specify dimensions for the element to appear as intended). Use `flexDiv` (and its complement `flexNode`) if this is the behavior you want. If instead you wish to specify the dimensions of an element, simply use the regular `div` or `node` functions in elm-html. Please refer to the docs for additional information on `flexDiv` and `flexNode`.
+And that's how one would implement the holy grail with flex-html.
 
 ### Advanced layout example
 
-flex-html contains a `layout` function which enables you to have a fine grained control on your layouts and create your own custom layout functions and not depend solely on the pre-defined `row` or `column` functions.
+flex-html is implemented as a collection of mixins. Each mixin allows you to define a flex property for a parent or child.
 
-To illustrate how it works, here is an example of positioning labels in a manner which would otherwise be insanely difficult:
+To illustrate how you can use these mixins, here is an example of positioning labels in a manner which would otherwise be insanely difficult:
 
 ```elm
 label : String -> Html
 label value =
-  div [style [("background-color", "red")]] [text value]
-
-labels : Html
-labels =
-  layout horizontal surround stretch noWrap
-    [ layout vertical center center noWrap [label "I am on the left"]
-    , layout vertical surround center noWrap
-      [ label "I am on top"
-      , label "I am absolutely centered"
-      , label "I am down below"
+  div
+    [ [ ("background-color", "red")
+      , ("color", "white")
+      , ("padding", "5px")
+      , ("font-weight", "bold")
       ]
-    , layout vertical center center noWrap [label "I am on the right"]
+      |> style
     ]
+    [ text value ]
 
 
 main : Html
-main = fullbleed labels
+main =
+  div
+    [ ( Flex.justifyContent Flex.Surround
+        ++ Flex.alignItems Flex.Center
+        ++ Flex.wrap Flex.NoWrap
+        ++ Flex.display
+        ++ [ ("width", "100vw"), ("height", "100vh") ]
+      ) |> style
+    ]
+    [ label "I am on the left"
+    , div
+        [ Flex.flow Flex.Vertical Flex.NoWrap
+          ++ Flex.justifyContent Flex.Surround
+          ++ Flex.alignItems Flex.Center
+          ++ Flex.display
+          ++ [ ("height", "100%") ]
+          |> style
+        ]
+        [ label "I am on top"
+        , label "I am absolutely centered"
+        , label "I am down below"
+        ]
+    , label "I am on the right"
+    ]
 ```
 
 So, as you may see, we have a helper function called `label` to create our labels. 
@@ -122,34 +165,39 @@ So, as you may see, we have a helper function called `label` to create our label
 We then layout the left label, the three central labels and the right label horizontally with:
 
 ```elm
-layout horizontal surround stretch noWrap
+div
+    [ ( Flex.justifyContent Flex.Surround
+        ++ Flex.alignItems Flex.Center
+        ++ Flex.wrap Flex.NoWrap
+        ++ Flex.display
+        ++ [ ("width", "100vw"), ("height", "100vh") ]
+      ) |> style
+    ]
 ```
 where:
-* `horizontal` implies that the children will be laid out from left to right horizontally
-* `surround` implies that the children will be equally spaced along the main axis (in this case, the horizontal axis)
-* `stretch` implies that the children will take up as much space as possible along the cross axis (in this case, the vertical axis)
-* `noWrap` implies that the children will not wrap if there isn't enough space to flex (not a concern in this example)
-
-
-The right and left sections are centered using :
-
-```elm
-layout vertical center center noWrap
-```
-where:
-* `vertical` implies that the children will be laid out from top to bottom
-* `center` (on both arguments) implies that the element will be absolutely centered
-
+* `justifyContent Surround` implies that the children will be equally spaced along the main axis (in this case, the horizontal axis)
+* `wrap NoWrap` implies that the children will not wrap if there isn't enough space to flex (not a concern in this example)
+* `alignItems Center` makes sur eto center the items
+* `display` applies flex display on the div
+* `horizontal` is the default direction and thus main axis
 
 And the central section (containing the top, centered, and bottom labels) are laid out using:
 
 ```elm
-layout vertical surround center noWrap
+div
+  [ Flex.flow Flex.Vertical Flex.NoWrap
+    ++ Flex.justifyContent Flex.Surround
+    ++ Flex.alignItems Flex.Center
+    ++ Flex.display
+    ++ [ ("height", "100%") ]
+    |> style
+  ]
+  [ label "I am on top"
+  , label "I am absolutely centered"
+  , label "I am down below"
+  ]
 ```
-Which ensures that the labels are equally spaced along the vertical axis `surround` and are centered along the horizontal axis `center`
+where:
+* `flow Vertical NoWrap` sets Vertical as the direction, making that the main axis and disable wrapping as seen previously
 
-To re-cap, `layout` takes arguments of the following kind
-```elm
-layout : Direction -> Alignment -> Alignment -> Wrap -> List Html -> Html
-layout direction mainAxisAlignment crossAxisAlignment wrap children
-```
+There are more mixins available. You can learn about these in the documentation as a reader exercise.
