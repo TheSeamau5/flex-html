@@ -14,12 +14,13 @@ Mixins can be used alone or as a combinator to specify flex-related styles.
 import Vendor
 
 
-{-| The `Direction` type specifies all the direction values possible for the `flexDirection` mixin.
+{-| The `Direction` type specifies all the direction values possible for the
+`flexDirection` mixin.
 
-    Horizontal: Default value. The flexible items are displayed horizontally, as a row.
-    Vertical: The flexible items are displayed vertically, as a column.
-    HorizontalReverse: Same as `Horizontal`, but in reverse order.
-    verticalReverse: Same as `Vertical`, but in reverse order.
+  - Horizontal: Default value. The flexible items are displayed horizontally, as a row.
+  - Vertical: The flexible items are displayed vertically, as a column.
+  - HorizontalReverse: Same as `Horizontal`, but in reverse order.
+  - verticalReverse: Same as `Vertical`, but in reverse order.
 -}
 type Direction
   = Horizontal
@@ -28,13 +29,14 @@ type Direction
   | VerticalReverse
 
 
-{-| The `Alignment` type specifies all the values possible for the `alignItems` and `justifyConteent` mixins.
+{-| The `Alignment` type specifies all the values possible for the `alignItems`
+and `justifyConteent` mixins.
 
-    Start: Content is left-aligned.
-    Center: Content is center-aligned.
-    End: Content is right-aligned.
-    Stretch: Content-width is stretched to fill up the space.
-    Surround: Extra space is devided into equal spaces around the content.
+  - Start: Content is left-aligned.
+  - Center: Content is center-aligned.
+  - End: Content is right-aligned.
+  - Stretch: Content-width is stretched to fill up the space.
+  - Surround: Extra space is devided into equal spaces around the content.
 -}
 type Alignment
   = Start
@@ -44,11 +46,12 @@ type Alignment
   | Surround
 
 
-{-| The `WrapValue` type specifies all the wrapping values possible for the `wrap` mixin.
-    
-    Wrap: Specifies that the flexible items will wrap if necessary.
-    NoWrap: Default value. Specifies that the flexible items will not wrap.
-    WrapReverse: Specifies that the flexible items will wrap, if necessary, in reverse order.
+{-| The `WrapValue` type specifies all the wrapping values possible for the
+`wrap` mixin.
+
+  - Wrap: Specifies that the flexible items will wrap if necessary.
+  - NoWrap: Default value. Specifies that the flexible items will not wrap.
+  - WrapReverse: Specifies that the flexible items will wrap, if necessary, in reverse order.
 -}
 type WrapValue
   = Wrap
@@ -64,10 +67,11 @@ display =
         then "-webkit-flex"
         else "flex"
   in
-    [ ("display", displayValue) ]
+      [ ("display", displayValue) ]
 
 
-{-| The `flow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+{-| The `flow` mixin specifies how much the item will grow relative to the rest
+of the flexible items inside the same container.
 -}
 flow: Direction -> WrapValue -> List (String, String)
 flow directionValue wrapValue =
@@ -76,7 +80,7 @@ flow directionValue wrapValue =
 
 
 {-| The `direction` mixin specifies the direction of the flexible items.
-  -}
+-}
 direction : Direction -> List (String, String)
 direction directionValue =
   let (boxDirection, boxOrientation, value) =
@@ -93,16 +97,16 @@ direction directionValue =
           VerticalReverse ->
             ("reverse", "vertical", "column-reverse")
   in
-    [ ("-webkit-box-direction", boxDirection)
-    , ("-webkit-box-orient", boxOrientation)
-    , ("-webkit-flex-direction", value)
-    , ("-ms-flex-direction", value)
-    , ("flex-direction", value)
-    ]
+      [ ("-webkit-box-direction", boxDirection)
+      , ("-webkit-box-orient", boxOrientation)
+      , ("-webkit-flex-direction", value)
+      , ("-ms-flex-direction", value)
+      , ("flex-direction", value)
+      ]
 
 
 {-| The `wrap` mixin specifies whether the flexible items should wrap or not.
-  -}
+-}
 wrap : WrapValue -> List (String, String)
 wrap wrapValue =
   let (vendorValue, value) =
@@ -116,14 +120,15 @@ wrap wrapValue =
         WrapReverse ->
           ("wrap-reverse", "wrap-reverse")
   in
-    [ ("-webkit-flex-wrap", value)
-    , ("-ms-flex-wrap", vendorValue)
-    , ("flex-wrap", value)
-    ]
+      [ ("-webkit-flex-wrap", value)
+      , ("-ms-flex-wrap", vendorValue)
+      , ("flex-wrap", value)
+      ]
 
 
-{-| The `alignItems` mixin specifies the default alignment for items inside the flexible container.
-  -}
+{-| The `alignItems` mixin specifies the default alignment for items inside
+the flexible container.
+-}
 alignItems : Alignment -> List (String, String)
 alignItems alignment =
   let (vendorValue, value) =
@@ -143,14 +148,15 @@ alignItems alignment =
           Surround ->
             ("baseline", "baseline")
   in
-    [ ("-webkit-box-align", vendorValue)
-    , ("-webkit-align-items", value)
-    , ("-ms-flex-align", vendorValue)
-    , ("align-items", value)
-    ]
+      [ ("-webkit-box-align", vendorValue)
+      , ("-webkit-align-items", value)
+      , ("-ms-flex-align", vendorValue)
+      , ("align-items", value)
+      ]
 
 
-{-| The `justifyContent` mixin aligns the flexible container's items when the items do not use all available space on the main-axis.
+{-| The `justifyContent` mixin aligns the flexible container's items when the
+items do not use all available space on the main-axis.
 -}
 justifyContent : Alignment -> List (String, String)
 justifyContent alignment =
@@ -171,14 +177,15 @@ justifyContent alignment =
           Surround ->
             ("none", "distribute", "space-around")
   in
-    [ ("-webkit-box-pack", webkitValue)
-    , ("-webkit-justify-content", value)
-    , ("-ms-flex-pack", msValue)
-    , ("justify-content", value)
-    ]
+      [ ("-webkit-box-pack", webkitValue)
+      , ("-webkit-justify-content", value)
+      , ("-ms-flex-pack", msValue)
+      , ("justify-content", value)
+      ]
 
 
-{-| The `grow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+{-| The `grow` mixin specifies how much the item will grow relative to the rest
+of the flexible items inside the same container.
 -}
 grow : String -> List (String, String)
 grow growValue =
@@ -189,7 +196,8 @@ grow growValue =
   ]
 
 
-{-| The `shrink` mixin specifies how the item will shrink relative to the rest of the flexible items inside the same container.
+{-| The `shrink` mixin specifies how the item will shrink relative to the rest
+of the flexible items inside the same container.
 -}
 shrink : String -> List (String, String)
 shrink shrinkValue =
@@ -209,37 +217,41 @@ basis basisValue =
   ]
 
 
-{-| The `flex` mixin specifies the length of the item, relative to the rest of the flexible items inside the same container.
-    It's a style shorthand for flexGrow, flexShrink and flexBasis
+{-| The `flex` mixin specifies the length of the item, relative to the rest of
+the flexible items inside the same container.
+
+It's a style shorthand for flexGrow, flexShrink and flexBasis
 -}
 flex : String -> String -> String -> List (String, String)
 flex grow shrink basis =
   let value =
         grow  ++ " " ++ shrink ++ " " ++ basis
   in
-    [ ("-webkit-box-flex", grow)
-    , ("-webkit-flex", value)
-    , ("-ms-flex", value)
-    , ("flex", value)
-    ]
+      [ ("-webkit-box-flex", grow)
+      , ("-webkit-flex", value)
+      , ("-ms-flex", value)
+      , ("flex", value)
+      ]
 
 
-{-| The `order` mixin specifies the order of a flexible item relative to the rest of the flexible items inside the same container.
-  -}
+{-| The `order` mixin specifies the order of a flexible item relative to the
+rest of the flexible items inside the same container.
+-}
 order : Int -> List (String, String)
 order value =
   let string =
         toString value
   in
-    [ ("-webkit-box-ordinal-group", string)
-    , ("-webkit-order", string)
-    , ("-ms-flex-order", string)
-    , ("-order", string)
-    ]
+      [ ("-webkit-box-ordinal-group", string)
+      , ("-webkit-order", string)
+      , ("-ms-flex-order", string)
+      , ("-order", string)
+      ]
 
 
-{-| The `alignSelf` mixin specifies the alignment for the selected item inside the flexible container.
-  -}
+{-| The `alignSelf` mixin specifies the alignment for the selected item inside
+the flexible container.
+-}
 alignSelf : Alignment -> List (String, String)
 alignSelf alignment =
   let value =
@@ -259,7 +271,7 @@ alignSelf alignment =
           Surround ->
             "baseline"
   in
-    [ ("-webkit-align-self", value)
-    , ("-ms-flex-item-align", value)
-    , ("align-self", value)
-    ]
+      [ ("-webkit-align-self", value)
+      , ("-ms-flex-item-align", value)
+      , ("align-self", value)
+      ]
