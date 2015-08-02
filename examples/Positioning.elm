@@ -9,39 +9,45 @@ import Flex
 
 label : String -> Html
 label value =
-  div
-    [ [ ("background-color", "red")
-      , ("color", "white")
-      , ("padding", "5px")
-      , ("font-weight", "bold")
-      ]
-      |> style
-    ]
-    [ text value ]
+  let
+      labelStyle =
+        [ ("background-color", "red")
+        , ("color", "white")
+        , ("padding", "5px")
+        , ("font-weight", "bold")
+        ]
+  in
+      div
+        [ style labelStyle ]
+        [ text value ]
 
 
 main : Html
 main =
-  div
-    [ ( Flex.justifyContent Flex.Surround
+  let
+      containerStyle =
+        ("width", "100vw")
+        :: ("height", "100vh")
+        :: Flex.justifyContent Flex.Surround
         ++ Flex.alignItems Flex.Center
         ++ Flex.wrap Flex.NoWrap
         ++ Flex.display
-        ++ [ ("width", "100vw"), ("height", "100vh") ]
-      ) |> style
-    ]
-    [ label "I am on the left"
-    , div
-        [ Flex.flow Flex.Vertical Flex.NoWrap
-          ++ Flex.justifyContent Flex.Surround
-          ++ Flex.alignItems Flex.Center
-          ++ Flex.display
-          ++ [ ("height", "100%") ]
-          |> style
+
+      innerContainerStyle =
+        ("height", "100%")
+        :: Flex.flow Flex.Vertical Flex.NoWrap
+        ++ Flex.justifyContent Flex.Surround
+        ++ Flex.alignItems Flex.Center
+        ++ Flex.display
+  in
+      div
+        [ style containerStyle ]
+        [ label "I am on the left"
+        , div
+            [ style innerContainerStyle ]
+            [ label "I am on top"
+            , label "I am absolutely centered"
+            , label "I am down below"
+            ]
+        , label "I am on the right"
         ]
-        [ label "I am on top"
-        , label "I am absolutely centered"
-        , label "I am down below"
-        ]
-    , label "I am on the right"
-    ]
