@@ -1,260 +1,41 @@
-module Flex
-  ( column
-  , columnReverse
-  , row
-  , rowReverse
-  , flex
-  , flexN
-  , flexDiv
-  , flexNode
-  , fullbleed
-  , layout
-  , horizontal
-  , horizontalReverse
-  , vertical
-  , verticalReverse
-  , start
-  , center
-  , end
-  , stretch
-  , surround
-  , wrap
-  , noWrap
-  , wrapReverse) where
+module Flex where
 
 {-| Companion library to elm-html. Helps with flexbox layout
 
-# Basic layout containers
-@docs row, column, rowReverse, columnReverse
+# Flex Types
+@docs Direction, Alignment, WrapValue
 
-# Flexing individual elements
-@docs flex, flexN
-
-# Making an element go fullscreen
-@docs fullbleed
-
-# Advanced flexbox layout
-@docs layout
-
-# Flex Direction
-@docs horizontal, vertical, horizontalReverse, verticalReverse
-
-# Flex Alignment
-@docs start, center, end, stretch, surround
-
-# Flex Wrapping
-@docs wrap, noWrap, wrapReverse
-
-# Creating flexbox-ready nodes
-@docs flexNode, flexDiv
+# Flex Mixins
+Mixins can be used alone or as a combinator to specify flex-related styles.
+@docs display, flow, direction, wrap, alignItems, justifyContent, grow, shrink, basis, flex, order, alignSelf
 
 -}
 
-import Html exposing (Html, div, Attribute, node)
-import Html.Attributes exposing (style)
+import Vendor
 
-{-| Analog of `node`. Creates a node (of given name), with a list of styles,
-a list of attributes, and a list of children
 
-    flexNode name styles attributes children
+{-| The `Direction` type specifies all the direction values possible for the `flexDirection` mixin.
 
-Note: The styles have been separated from the attributes in order for the flex attribute
-to persist (in case the styles were overwritten). As a result, DO NOT include styles in
-your attributes if you wish to use `flexNode`. Pass the styles to the function directly.
-This'll guarantee that things will go swimmingly :)
+    Horizontal: Default value. The flexible items are displayed horizontally, as a row.
+    Vertical: The flexible items are displayed vertically, as a column.
+    HorizontalReverse: Same as `Horizontal`, but in reverse order.
+    verticalReverse: Same as `Vertical`, but in reverse order.
 -}
-flexNode : String -> List (String, String) -> List Attribute -> List Html -> Html
-flexNode name styles attributes children =
-  let
-      flexAttribute = style
-        ([ ("flex", "1 1 auto")
-         , ("display", "flex")] ++ styles)
-
-  in
-      node name (flexAttribute :: attributes) children
-
-
-{-| Analog of `div`. Creates a div with a list of styles, a list of attributes,
-and a list of children
-
-    flexDiv styles attributes children
-
-Note: The styles have been separated from the attributes in order for the flex attribute
-to persist (in case the styles were overwritten). As a result, DO NOT include styles in
-your attributes if you wish to use `flexDiv`. Pass the styles to the function directly.
-This'll guarantee that things will go swimmingly :)
--}
-flexDiv : List (String, String) -> List Attribute -> List Html -> Html
-flexDiv =
-  flexNode "div"
-
-
-container : String -> List Html -> Html
-container direction =
-  let
-      containerStyle = style
-        [ ("display", "flex")
-        , ("flex-direction", direction)
-        , ("flex", "1 1 auto")
-        ]
-
-  in
-      div [containerStyle]
-
-{-| Align children vertically from top to bottom
--}
-column : List Html -> Html
-column =
-  container "column"
-
-{-| Align children vertically from bottom to top
--}
-columnReverse : List Html -> Html
-columnReverse =
-  container "column-reverse"
-
-{-| Align children horizontally from left to right
--}
-row : List Html -> Html
-row =
-  container "row"
-
-{-| Align children horizontally from right to left
--}
-rowReverse : List Html -> Html
-rowReverse =
-  container "row-reverse"
-
-{-| Surround an Html element by a flex container.
-
-Note: if `flex` does not seem to do what you think it should do,
-consider adding the following style to the input Html node:
-
-    ("flex", "1")
-
-`flex` does not do this automatically. It creates a container around
-a node rather than affect it directly.
--}
-flex : Html -> Html
-flex =
-  flexN 1
-
-
-{-| Surround an Html element by a flex container of a given flex size.
-
-Note: if `flexN` does not seem to do what you think it should do,
-consider adding the following style to the input Html node:
-
-    ("flex", "1")
-
-`flexN` does not do this automatically. It creates a container around
-a node rather than affect it directly.
--}
-flexN : Int -> Html -> Html
-flexN factor element =
-  let
-      elementStyles = style
-        [ ("flex", (toString factor) ++ " 1 auto")
-        , ("display", "flex")
-        ]
-
-  in
-      div [elementStyles] [element]
-
-{-| Wraps an element in a flex container that takes the size of the entire
-screen. Use this only at the top level for the full view. This is not intended
-to be used on individual Html nodes but rather once on the entire view.
--}
-fullbleed : Html -> Html
-fullbleed element =
-  let
-      elementStyle = style
-        [ ("width", "100vw")
-        , ("height", "100vh")
-        , ("display", "flex")
-        ]
-  in
-      div [elementStyle] [element]
-
-
-{-| Allows you to construct a custom flex container by setting various
-parameters.
-
-    layout direction justify align wrap children
-
-* `direction` dictates the direction the children will flow.
-The choices are : `horizontal`, `vertical`, `horizontalReverse`, `verticalReverse`
-
-* `justify` dictates how the children align on the main-axis.
-The choices are `start`, `center`, `end`, `stretch`, `surround`
-
-* `align` dictates how the children align on the cross-axis
-The choices are `start`, `center`, `end`, `stretch`, `surround`
-
-* `wrap` dictates if the children wrap if there is no space left for them to flex
-The choices are `wrap`, `noWrap`, `wrapReverse`
--}
-layout : Direction -> Alignment -> Alignment -> Wrap -> List Html -> Html
-layout direction justify align wrap =
-  let
-      directionString = case direction of
-        Horizontal -> "row"
-        Vertical -> "column"
-        HorizontalReverse -> "row-reverse"
-        VerticalReverse -> "column-reverse"
-
-      alignString = case align of
-        Start -> "flex-start"
-        Center -> "center"
-        End -> "flex-end"
-        Stretch -> "strech"
-        Surround -> "baseline"
-
-      justifyString = case justify of
-        Start -> "flex-start"
-        Center -> "center"
-        End -> "flex-end"
-        Stretch -> "space-between"
-        Surround -> "space-around"
-
-      wrapString = case wrap of
-        Wrap -> "wrap"
-        NoWrap -> "nowrap"
-        WrapReverse -> "wrap-reverse"
-
-      containerStyles = style
-        [ ("display", "flex")
-        , ("flex-direction", directionString)
-        , ("justify-content", justifyString)
-        , ("align-items", alignString)
-        , ("width", "100%")
-        , ("height", "100%")
-        , ("flex", "1 1 auto")
-        ]
-
-  in
-      div [containerStyles]
-
-
-
 type Direction
   = Horizontal
   | Vertical
   | HorizontalReverse
   | VerticalReverse
 
-horizontal : Direction
-horizontal = Horizontal
 
-vertical : Direction
-vertical = Vertical
+{-| The `Alignment` type specifies all the values possible for the `alignItems` and `justifyConteent` mixins.
 
-horizontalReverse : Direction
-horizontalReverse = HorizontalReverse
-
-verticalReverse : Direction
-verticalReverse = VerticalReverse
-
+    Start: Content is left-aligned.
+    Center: Content is center-aligned.
+    End: Content is right-aligned.
+    Stretch: Content-width is stretched to fill up the space.
+    Surround: Extra space is devided into equal spaces around the content.
+-}
 type Alignment
   = Start
   | Center
@@ -262,32 +43,223 @@ type Alignment
   | Stretch
   | Surround
 
-start : Alignment
-start = Start
 
-center : Alignment
-center = Center
-
-end : Alignment
-end = End
-
-stretch : Alignment
-stretch = Stretch
-
-surround : Alignment
-surround = Surround
-
-
-type Wrap
+{-| The `WrapValue` type specifies all the wrapping values possible for the `wrap` mixin.
+    
+    Wrap: Specifies that the flexible items will wrap if necessary.
+    NoWrap: Default value. Specifies that the flexible items will not wrap.
+    WrapReverse: Specifies that the flexible items will wrap, if necessary, in reverse order.
+-}
+type WrapValue
   = Wrap
   | NoWrap
   | WrapReverse
 
-wrap : Wrap
-wrap = Wrap
 
-noWrap : Wrap
-noWrap = NoWrap
+{-| Displays an element as an block-level flex container. -}
+display : List (String, String)
+display =
+  let displayValue =
+        if Vendor.prefix == Vendor.Webkit
+        then "-webkit-flex"
+        else "flex"
+  in
+    [ ("display", displayValue) ]
 
-wrapReverse : Wrap
-wrapReverse = WrapReverse
+
+{-| The `flow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+-}
+flow: Direction -> WrapValue -> List (String, String)
+flow directionValue wrapValue =
+  direction directionValue
+  ++ wrap wrapValue
+
+
+{-| The `direction` mixin specifies the direction of the flexible items.
+  -}
+direction : Direction -> List (String, String)
+direction directionValue =
+  let (boxDirection, boxOrientation, value) =
+        case directionValue of
+          Horizontal ->
+            ("normal", "horizontal", "row")
+
+          Vertical ->
+            ("normal", "vertical", "column")
+
+          HorizontalReverse ->
+            ("reverse", "horizontal", "row-reverse")
+
+          VerticalReverse ->
+            ("reverse", "vertical", "column-reverse")
+  in
+    [ ("-webkit-box-direction", boxDirection)
+    , ("-webkit-box-orient", boxOrientation)
+    , ("-webkit-flex-direction", value)
+    , ("-ms-flex-direction", value)
+    , ("flex-direction", value)
+    ]
+
+
+{-| The `wrap` mixin specifies whether the flexible items should wrap or not.
+  -}
+wrap : WrapValue -> List (String, String)
+wrap wrapValue =
+  let (vendorValue, value) =
+     case wrapValue of
+        Wrap ->
+          ("wrap", "wrap")
+
+        NoWrap ->
+          ("none", "nowrap")
+
+        WrapReverse ->
+          ("wrap-reverse", "wrap-reverse")
+  in
+    [ ("-webkit-flex-wrap", value)
+    , ("-ms-flex-wrap", vendorValue)
+    , ("flex-wrap", value)
+    ]
+
+
+{-| The `alignItems` mixin specifies the default alignment for items inside the flexible container.
+  -}
+alignItems : Alignment -> List (String, String)
+alignItems alignment =
+  let (vendorValue, value) =
+        case alignment of
+          Start ->
+            ("start", "flex-start")
+
+          Center ->
+            ("center", "center")
+
+          End ->
+            ("end", "flex-end")
+
+          Stretch ->
+            ("stretch", "stretch")
+
+          Surround ->
+            ("baseline", "baseline")
+  in
+    [ ("-webkit-box-align", vendorValue)
+    , ("-webkit-align-items", value)
+    , ("-ms-flex-align", vendorValue)
+    , ("align-items", value)
+    ]
+
+
+{-| The `justifyContent` mixin aligns the flexible container's items when the items do not use all available space on the main-axis.
+-}
+justifyContent : Alignment -> List (String, String)
+justifyContent alignment =
+  let (webkitValue, msValue, value) =
+        case alignment of
+          Start ->
+            ("start", "start", "flex-start")
+
+          Center ->
+            ("center", "center", "center")
+
+          End ->
+            ("end", "end", "flex-end")
+
+          Stretch ->
+            ("justify", "justify", "space-between")
+
+          Surround ->
+            ("none", "distribute", "space-around")
+  in
+    [ ("-webkit-box-pack", webkitValue)
+    , ("-webkit-justify-content", value)
+    , ("-ms-flex-pack", msValue)
+    , ("justify-content", value)
+    ]
+
+
+{-| The `grow` mixin specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+-}
+grow : String -> List (String, String)
+grow growValue =
+  [ ("-webkit-box-flex", growValue)
+  , ("-webkit-flex-grow", growValue)
+  , ("-ms-flex-positive", growValue)
+  , ("flex-grow", growValue)
+  ]
+
+
+{-| The `shrink` mixin specifies how the item will shrink relative to the rest of the flexible items inside the same container.
+-}
+shrink : String -> List (String, String)
+shrink shrinkValue =
+  [ ("-webkit-flex-shrink", shrinkValue)
+  , ("-ms-flex-negative", shrinkValue)
+  , ("flex-shrink", shrinkValue)
+  ]
+
+
+{-| The `basis` mixin specifies the initial length of a flexible item.
+-}
+basis : String -> List (String, String)
+basis basisValue =
+  [ ("-webkit-flex-basis", basisValue)
+  , ("-ms-flex-preferred-size", basisValue)
+  , ("flex-basis", basisValue)
+  ]
+
+
+{-| The `flex` mixin specifies the length of the item, relative to the rest of the flexible items inside the same container.
+    It's a style shorthand for flexGrow, flexShrink and flexBasis
+-}
+flex : String -> String -> String -> List (String, String)
+flex grow shrink basis =
+  let value =
+        grow  ++ " " ++ shrink ++ " " ++ basis
+  in
+    [ ("-webkit-box-flex", grow)
+    , ("-webkit-flex", value)
+    , ("-ms-flex", value)
+    , ("flex", value)
+    ]
+
+
+{-| The `order` mixin specifies the order of a flexible item relative to the rest of the flexible items inside the same container.
+  -}
+order : Int -> List (String, String)
+order value =
+  let string =
+        toString value
+  in
+    [ ("-webkit-box-ordinal-group", string)
+    , ("-webkit-order", string)
+    , ("-ms-flex-order", string)
+    , ("-order", string)
+    ]
+
+
+{-| The `alignSelf` mixin specifies the alignment for the selected item inside the flexible container.
+  -}
+alignSelf : Alignment -> List (String, String)
+alignSelf alignment =
+  let value =
+        case alignment of
+          Start ->
+            "flex-start"
+
+          Center ->
+            "center"
+
+          End ->
+            "flex-end"
+
+          Stretch ->
+            "stretch"
+
+          Surround ->
+            "baseline"
+  in
+    [ ("-webkit-align-self", value)
+    , ("-ms-flex-item-align", value)
+    , ("align-self", value)
+    ]

@@ -1,16 +1,15 @@
 {
-    "version": "1.0.2",
-    "summary": "Flexbox layout for elm-html",
+    "version": "1.0.0",
+    "summary": "Examples for flex-html.",
     "repository": "https://github.com/TheSeamau5/flex-html.git",
     "license": "BSD3",
     "source-directories": [
-        "src"
+        "."
     ],
-    "exposed-modules": [
-        "Flex"
-    ],
+    "exposed-modules": [],
     "dependencies": {
         "elm-lang/core": "2.0.0 <= v < 3.0.0",
+        "evancz/elm-html": "3.0.0 <= v < 4.0.0",
         "coreytrampe/elm-vendor": "1.0.0 <= v < 2.0.0"
     },
     "elm-version": "0.15.0 <= v < 0.16.0"
