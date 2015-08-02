@@ -4,7 +4,8 @@
     "repository": "https://github.com/TheSeamau5/flex-html.git",
     "license": "BSD3",
     "source-directories": [
-        "."
+        ".",
+        "../src"
     ],
     "exposed-modules": [],
     "dependencies": {

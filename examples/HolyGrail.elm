@@ -7,29 +7,30 @@ import Flex
 -- HOLY GRAIL LAYOUT EXAMPLE
 ----------------------------
 
-background : String -> String -> Html
+background : Float -> String -> Html
 background grow color =
-  let backgroundStyles =
-        Flex.grow grow
-        |> (::) ("background-color", color)
-        |> style
-
+  let
+      backgroundStyles =
+        ("background-color", color)
+        :: Flex.grow grow
   in
-      div [backgroundStyles] []
+      div
+        [ style backgroundStyles ]
+        []
 
 
 holyGrail : Html
 holyGrail =
-  let topSection = background "1" "red"
-      bottomSection = background "1" "black"
-
-      leftSection = background "1" "blue"
-      rightSection = background "1" "yellow"
-      centerSection = background "4" "green"
+  let
+      topSection    = background 1 "red"
+      bottomSection = background 1 "black"
+      leftSection   = background 1 "blue"
+      rightSection  = background 1 "yellow"
+      centerSection = background 4 "green"
 
       styleList =
-        (Flex.direction Flex.Horizontal)
-        ++ (Flex.grow "8")
+        Flex.direction Flex.Horizontal
+        ++ Flex.grow 8
         ++ Flex.display
 
       mainSection =
@@ -45,7 +46,7 @@ holyGrail =
         , ("height", "100vh")
         ]
         ++ Flex.display
-        ++ (Flex.direction Flex.Vertical)
+        ++ Flex.direction Flex.Vertical
 
   in
       div
